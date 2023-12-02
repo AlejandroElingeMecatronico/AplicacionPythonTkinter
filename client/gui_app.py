@@ -1,6 +1,7 @@
 import tkinter as tk
-
-
+from tkinter import ttk
+from model.peliculas_dao import crear_tabla, borrar_tabla
+from model.peliculas_dao import Pelicula
 def barra_menu(root):
     barra_menu = tk.Menu(root)
     root.config(menu=barra_menu, width=300, height=300)
@@ -8,8 +9,8 @@ def barra_menu(root):
     menu_inicio = tk.Menu(barra_menu, tearoff=0)
     barra_menu.add_cascade(label='Inicio', menu=menu_inicio)
 
-    menu_inicio.add_command(label='Crear Registro en DB')
-    menu_inicio.add_command(label='Eliminar Registro en DB')
+    menu_inicio.add_command(label='Crear Registro en DB',command=crear_tabla)
+    menu_inicio.add_command(label='Eliminar Registro en DB',command=borrar_tabla)
     menu_inicio.add_command(label='Salir', command=root.destroy)
 
 
@@ -21,6 +22,7 @@ class Frame(tk.Frame):
         # self.config(bg='blue')
         self.campos_peliculas()
         self.deshabilitar_campos()
+        self.tabla_peliculas()
 
     def campos_peliculas(self):
         # Labels de cada campo.
@@ -53,23 +55,23 @@ class Frame(tk.Frame):
         self.entry_genero.grid(row=2, column=1, padx=10, pady=10,columnspan=2)
 
         #Botones
-        self.boton_nuevo=tk.Button(self, text='Nuevo',command = self.habilitar_campos)
-        self.boton_nuevo.config(width=20,font=('Arial',12,'bold'),
+        self.boton_nuevo = tk.Button(self, text='Nuevo', command = self.habilitar_campos)
+        self.boton_nuevo.config(width=20,font=('Arial', 12, 'bold'),
                                 fg='#DAD5D6',bg='#158645',
                                 cursor='hand2',activebackground='#35BD6F')
-        self.boton_nuevo.grid(row=4,column=0,padx=10,pady=10)
+        self.boton_nuevo.grid(row=3,column=0,padx=10,pady=10)
 
-        self.boton_guardar = tk.Button(self, text='Guardar')
+        self.boton_guardar = tk.Button(self, text='Guardar',command = self.deshabilitar_campos)
         self.boton_guardar.config(width=20, font=('Arial', 12, 'bold'),
                                 fg='#DAD5D6', bg='#0E00BD',
                                 cursor='hand2', activebackground='#695EF4')
-        self.boton_guardar.grid(row=4, column=1, padx=10, pady=10)
+        self.boton_guardar.grid(row=3, column=1, padx=10, pady=10)
 
         self.boton_cancelar = tk.Button(self, text='Cancelar')
         self.boton_cancelar.config(width=20, font=('Arial', 12, 'bold'),
                                   fg='#DAD5D6', bg='#FF0000',
                                   cursor='hand2', activebackground='#F45E5E')
-        self.boton_cancelar.grid(row=4, column=2, padx=10, pady=10)
+        self.boton_cancelar.grid(row=3, column=2, padx=10, pady=10)
 
     #habilitadores
     def habilitar_campos(self):
@@ -79,6 +81,7 @@ class Frame(tk.Frame):
 
         self.boton_guardar.config(state='normal')
         self.boton_cancelar.config(state='normal')
+
     def deshabilitar_campos(self):
         self.mi_nombre.set('')
         self.my_duracion.set('')
@@ -91,3 +94,40 @@ class Frame(tk.Frame):
 
         self.boton_guardar.config(state='disable')
         self.boton_cancelar.config(state='disable')
+
+    def guardar_datos(self):
+
+        pelicula=Pelicula(
+            self.mi_nombre.get(),
+            self.mi_duracion.get(),
+            self.mi_genero.get(),
+        )
+
+        guardar(pelicula)
+
+        self.deshabilitar_campos()
+
+    def tabla_peliculas(self):
+        self.tabla = ttk.Treeview(self,
+                    columns=('nombre','duracion','genero'))
+        self.tabla.grid(row=4, column=0, columnspan=4)
+
+        self.tabla.heading('#0',text='ID')
+        self.tabla.heading('#1', text='NOMBRE')
+        self.tabla.heading('#2', text='DURACION')
+        self.tabla.heading('#3', text='GENERO')
+
+        self.tabla.insert('',0, text='1', values=('Los vengadores','2.35','Acción'))
+
+        #Botones de abajo
+        self.boton_editar = tk.Button(self, text='Editar')
+        self.boton_editar.config(width=20, font=('Arial', 12, 'bold'),
+                                fg='#DAD5D6', bg='#158645',
+                                cursor='hand2', activebackground='#35BD6F')
+        self.boton_editar.grid(row=5, column=0, padx=10, pady=10)
+
+        self.boton_cancelar = tk.Button(self, text='Cancelar')
+        self.boton_cancelar.config(width=20, font=('Arial', 12, 'bold'),
+                                  fg='#DAD5D6', bg='#0E00BD',
+                                  cursor='hand2', activebackground='#695EF4')
+        self.boton_cancelar.grid(row=5, column=1, padx=10, pady=10)

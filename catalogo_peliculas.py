@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from client.gui_app import Frame , barra_menu
+from client.gui_app import Frame, barra_menu
 
 def main():
     root = tk.Tk()
